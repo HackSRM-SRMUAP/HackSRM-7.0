@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="80" viewBox="0 0 160 80">
+  <rect width="160" height="80" fill="#222222"/>
+  <path d="M20 40h120" stroke="#33ff00" stroke-width="4"/>
+  <path d="M40 20v40M80 20v40M120 20v40" stroke="#33ff00" stroke-width="3" opacity="0.8"/>
+  <text x="50%" y="72" text-anchor="middle" fill="#33ff00" font-size="14" font-family="Consolas, monospace" font-weight="700">WEBWORKS</text>
+</svg>
