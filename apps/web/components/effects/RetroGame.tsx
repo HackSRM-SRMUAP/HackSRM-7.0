@@ -71,7 +71,7 @@ export default function RetroGame({ onFail }: Props) {
 
       // update obstacles
       for (const o of obstacles) o.x -= o.vx;
-      while (obstacles.length > 0 && obstacles[0].x + obstacles[0].w < 0) {
+      while (obstacles.length > 0 && obstacles[0]!.x + obstacles[0]!.w < 0) {
         obstacles.shift();
         score += 10;
       }

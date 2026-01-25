@@ -24,7 +24,7 @@ export default function RetroGameEmbed() {
     resizeToParent();
 
     let ro: ResizeObserver | null = null;
-    if ("ResizeObserver" in window) {
+    if ( typeof ResizeObserver !== "undefined" ) {
       ro = new ResizeObserver(() => resizeToParent());
       if (wrapRef.current) ro.observe(wrapRef.current);
     } else {
@@ -84,7 +84,7 @@ export default function RetroGameEmbed() {
           const order: Diff[] = ["easy", "normal", "hard"];
           const idx = order.indexOf(difficulty);
           const next = e.key === "ArrowRight" ? (idx + 1) % order.length : (idx - 1 + order.length) % order.length;
-          difficulty = order[next];
+          difficulty = (order[next] as Diff);
         }
       }
     };
