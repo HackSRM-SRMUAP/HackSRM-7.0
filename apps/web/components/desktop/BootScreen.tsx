@@ -60,7 +60,7 @@ export default function BootScreen({ onDone, dumpMs = 5000, loadMs = 2600 }: { o
     // Attach gesture fallback early so audio can unlock during dump
     const onGesture = () => { playChime(); window.removeEventListener("pointerdown", onGesture); };
     window.addEventListener("pointerdown", onGesture, { once: true });
-    const script = [
+    const script: string[] = [
       "HACKSRM-BOOT v7.0 — Kernel 3.11.98",
       "ACPI: probing devices ... OK",
       "PCI: enumerating busses ... OK",
@@ -80,7 +80,10 @@ export default function BootScreen({ onDone, dumpMs = 5000, loadMs = 2600 }: { o
     let i = 0;
     setLines([]);
     const iv = setInterval(() => {
-      setLines(prev => [...prev, script[i]]);
+      const nextLine = script[i];
+      if (nextLine !== undefined) {
+        setLines(prev => [...prev, nextLine]);
+      }
       i++;
       if (i >= script.length) clearInterval(iv);
     }, Math.max(80, Math.floor(dumpMs / (script.length + 4))));

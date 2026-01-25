@@ -16,9 +16,8 @@ import AnnouncementsWindow from "@/components/desktop/windows/AnnouncementsWindo
 import SponsorsWindow from "@/components/desktop/windows/SponsorsWindow";
 import RegisterWindow from "@/components/desktop/windows/RegisterWindow";
 import RecycleWindow from "@/components/desktop/windows/RecycleWindow";
-import sponsors, { type Sponsor } from "@/lib/sponsors";
 import SponsorWindow from "@/components/desktop/windows/SponsorWindow";
-import { FaGamepad, FaFlask, FaDesktop, FaClock, FaTrophy, FaScroll, FaBullhorn, FaGlobe, FaFileAlt, FaTrashAlt } from "react-icons/fa";
+import { urlFor } from "@/lib/sanity";
 
 function ErrorPopup({ message, onClose }: { message: string; onClose: () => void }) {
   return (
@@ -39,9 +38,56 @@ interface ScheduleItem {
   title: string;
   startTime: string;
   type: string;
+  location?: string;
 }
 
-export default function Desktop98({ events }: { events: ScheduleItem[] }) {
+interface AboutDoc {
+  _id: string;
+  title: string;
+  subtitle?: string;
+  heroImage?: any;
+  body?: any;
+  highlights?: string[];
+  cta?: { label?: string; href?: string };
+}
+
+interface PersonDoc {
+  _id: string;
+  name: string;
+  role?: string;
+  image?: any;
+  bio?: string;
+  socials?: { github?: string; linkedin?: string; twitter?: string; website?: string };
+}
+
+interface OrganizerDoc {
+  _id: string;
+  name: string;
+  logo?: any;
+  url?: string;
+  description?: string;
+}
+
+interface FaqDoc {
+  _id: string;
+  question: string;
+  answer: string;
+  category?: string;
+  order?: number;
+}
+
+export default function Desktop98({ events, about, leaders, organizers, faqs, announcements, prizes, sponsors, rulesPage, settings }: {
+  events: ScheduleItem[];
+  about: AboutDoc | null;
+  leaders: PersonDoc[];
+  organizers: OrganizerDoc[];
+  faqs: FaqDoc[];
+  announcements: { _id: string; title: string; date?: string; time?: string; pinned?: boolean; level?: string; _updatedAt?: string }[];
+  prizes: { _id: string; name: string; amount: string; by?: string; tier?: string; desc?: string }[];
+  sponsors: { _id: string; name: string; tier: string; logo?: any; url?: string }[];
+  rulesPage: { _id: string; title?: string; core?: string[]; conduct?: string[]; submissions?: string[]; eligibility?: string[]; note?: string } | null;
+  settings: { _id: string; registerUrl?: string } | null;
+}) {
   const [boot, setBoot] = useState(true);
   const [startMenu, setStartMenu] = useState(false);
   const [windows, setWindows] = useState<WindowItem[]>([]);
@@ -167,26 +213,26 @@ export default function Desktop98({ events }: { events: ScheduleItem[] }) {
   }, [popupInterval, popupChance]);
 
   const scheduleContent = (<ScheduleWindow events={events} />);
-  const aboutContent = (<AboutWindow />);
-  const prizesContent = (<PrizesWindow />);
-  const rulesContent = (<RulesWindow />);
-  const sponsorsContent = (<SponsorsWindow />);
-  const announcementsContent = (<AnnouncementsWindow />);
+  const aboutContent = (<AboutWindow about={about} leaders={leaders} organizers={organizers} faqs={faqs} />);
+  const prizesContent = (<PrizesWindow prizes={prizes} />);
+  const rulesContent = (<RulesWindow rules={rulesPage || undefined} />);
+  const sponsorsContent = (<SponsorsWindow sponsors={sponsors} />);
+  const announcementsContent = (<AnnouncementsWindow announcements={announcements} />);
   const gameContent = (<RetroGameEmbed />);
-  const registerContent = (<RegisterWindow />);
+  const registerContent = (<RegisterWindow registerUrl={settings?.registerUrl} />);
   const recycleContent = (<RecycleWindow />);
 
   const icons = useMemo(() => ([
-    { id: "game", title: "Retro Runner.exe", pixelName: "game" as const, pixelColor: "#33ff00", content: gameContent },
-    { id: "crt-settings", title: "CRT Settings.exe", pixelName: "settings" as const, pixelColor: "#00ffff", content: <CRTSettings /> },
     { id: "about", title: "About.exe", pixelName: "about" as const, pixelColor: "#0000cc", content: aboutContent },
     { id: "schedule", title: "Schedule.exe", pixelName: "schedule" as const, pixelColor: "#ffcc00", content: scheduleContent },
+    { id: "game", title: "Retro Runner.exe", pixelName: "game" as const, pixelColor: "#33ff00", content: gameContent },
+    { id: "crt-settings", title: "CRT Settings.exe", pixelName: "settings" as const, pixelColor: "#00ffff", content: <CRTSettings /> },
+    { id: "recycle", title: "Recycle Bin", pixelName: "recycle" as const, pixelColor: "#00cc66", content: recycleContent },
     { id: "prizes", title: "Prizes.exe", pixelName: "prizes" as const, pixelColor: "#ff00ff", content: prizesContent },
     { id: "rules", title: "Rules.txt", pixelName: "rules" as const, pixelColor: "#cccccc", content: rulesContent },
     { id: "ann", title: "Announcements.log", pixelName: "ann" as const, pixelColor: "#ff3300", content: announcementsContent },
     { id: "sponsors", title: "Sponsors.html", pixelName: "sponsors" as const, pixelColor: "#00aaff", content: sponsorsContent },
     { id: "register", title: "Register.exe", pixelName: "register" as const, pixelColor: "#33ffaa", content: registerContent },
-    { id: "recycle", title: "Recycle Bin", pixelName: "recycle" as const, pixelColor: "#00cc66", content: recycleContent },
   ]), []);
 
   // No auto-open windows after boot; user opens via desktop icons
@@ -216,7 +262,7 @@ export default function Desktop98({ events }: { events: ScheduleItem[] }) {
       <SystemErrorBanner lowerZ={anyMaximized} messages={bannerMessages} intervalMs={7000} />
       {/* Countdown widget (positioned to the right, before sidebar) */}
       <div className="fixed z-40" style={{ top: "4.5rem", right: "19rem" }}>
-        <CountdownTimer target={new Date("2026-02-11T00:00:00")} label="Hackathon starts in:" />
+        <CountdownTimer target={new Date("2026-02-25T00:00:00")} label="Hackathon starts in:" />
       </div>
       {/* Contrast overlay over wallpaper for readability */}
       <div
@@ -265,7 +311,7 @@ export default function Desktop98({ events }: { events: ScheduleItem[] }) {
               </div>
               <button
                 className="win98-btn px-2 py-1 text-xs"
-                onClick={() => openWindow("sponsors", "Sponsors.html", <SponsorsWindow />)}
+                onClick={() => openWindow("sponsors", "Sponsors.html", <SponsorsWindow sponsors={sponsors} />)}
               >
                 Open Sponsors.html
               </button>
@@ -273,7 +319,7 @@ export default function Desktop98({ events }: { events: ScheduleItem[] }) {
             <div className="overflow-auto no-scrollbar overflow-x-hidden">
             <ul className="space-y-1 pr-1">
               {(sponsorTier === "All" ? sponsors : sponsors.filter(s => s.tier === sponsorTier)).map((s) => (
-                <li key={s.id}>
+                <li key={(s as any)._id ?? (s as any).id ?? (s as any).name}>
                   <div
                     role="button"
                     tabIndex={0}
@@ -282,14 +328,20 @@ export default function Desktop98({ events }: { events: ScheduleItem[] }) {
                       const safeX = Math.max(24, window.innerWidth - 680 - 96);
                       const safeY = 80;
                       openWindow(
-                        `sponsor-${s.id}`,
+                        `sponsor-${(s as any)._id ?? (s as any).id ?? (s as any).name}`,
                         `${s.name}.html`,
-                        <SponsorWindow sponsor={s as Sponsor} />,
+                        <SponsorWindow sponsor={s as any} />,
                         { x: safeX, y: safeY }
                       );
                     }}
                     >
-                    <img src={s.logo} alt="" className="bg-white/60 w-12 sm:w-16 h-auto flex-shrink-0" />
+                    <img
+                      src={typeof (s as any).logo === "string"
+                        ? (s as any).logo
+                        : (urlFor((s as any).logo)?.width(200).fit('max').url() || "")}
+                      alt=""
+                      className="bg-white/80 w-20 h-12 object-contain p-1 flex-shrink-0 border border-gray-300"
+                    />
                     <div className="flex flex-col min-w-0">
                       <span className="font-semibold truncate whitespace-nowrap overflow-hidden text-ellipsis">{s.name}</span>
                       <span className={`mt-1 text-[10px] px-1 rounded border ${tierBadgeClass(s.tier)}`}>{s.tier}</span>
@@ -300,9 +352,9 @@ export default function Desktop98({ events }: { events: ScheduleItem[] }) {
                           const safeX = Math.max(24, window.innerWidth - 680 - 96);
                           const safeY = 80;
                           openWindow(
-                            `sponsor-${s.id}`,
+                            `sponsor-${(s as any)._id ?? (s as any).id ?? (s as any).name}`,
                             `${s.name}.html`,
-                            <SponsorWindow sponsor={s as Sponsor} />,
+                            <SponsorWindow sponsor={s as any} />,
                             { x: safeX, y: safeY }
                           );
                         }}

@@ -17,8 +17,8 @@ export default function Window98({
   onMinimize,
   onFocus,
   onMaxChange,
-  width = 680,
-  height = 440,
+  width = 760,
+  height = 520,
   dark = false,
 }: {
   item: WindowItem;

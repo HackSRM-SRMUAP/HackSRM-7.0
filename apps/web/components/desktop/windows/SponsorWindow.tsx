@@ -1,11 +1,17 @@
 "use client";
-import type { Sponsor } from "@/lib/sponsors";
+import { urlFor } from "@/lib/sanity";
 
-export default function SponsorWindow({ sponsor }: { sponsor: Sponsor }) {
+export default function SponsorWindow({ sponsor }: { sponsor: any }) {
   return (
     <div className="p-4 text-black">
       <div className="flex items-center gap-4">
-        <img src={sponsor.logo} alt={`${sponsor.name} logo`} width={160} height={80} className="bg-white/80 p-2 shadow-inner" />
+        <img
+          src={typeof sponsor.logo === "string" ? sponsor.logo : (urlFor(sponsor.logo)?.width(300).height(150).url() || "")}
+          alt={`${sponsor.name} logo`}
+          width={160}
+          height={80}
+          className="bg-white/80 p-2 shadow-inner"
+        />
         <div>
           <div className="text-2xl font-bold tracking-wide">{sponsor.name}</div>
           <div className="text-sm text-gray-700">{sponsor.tier}</div>
