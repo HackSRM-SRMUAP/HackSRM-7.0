@@ -8,7 +8,7 @@ import React from 'react'
 export function HackSRMIcon() {
   return React.createElement('img', {
     src: './static/hacksrm-logo.svg',
-    alt: 'HackSRM',
+    alt: 'HackSRM 7.0',
     style: { height: '1.5rem', display: 'block' },
   })
 }
@@ -18,8 +18,8 @@ export default defineConfig({
   title: 'hacksrm-studio',
   icon: HackSRMIcon,
 
-  projectId: 'vrujefqh',
-  dataset: 'production',
+  projectId: process.env.SANITY_PROJECT_ID!,
+  dataset: process.env.SANITY_DATASET!,
 
   plugins: [structureTool(), visionTool()],
 
