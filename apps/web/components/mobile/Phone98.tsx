@@ -34,9 +34,56 @@ interface ScheduleItem {
   title: string;
   startTime: string;
   type: string;
+  location?: string;
 }
 
-export default function Phone98({ events }: { events: ScheduleItem[] }) {
+interface AboutDoc {
+  _id: string;
+  title: string;
+  subtitle?: string;
+  heroImage?: any;
+  body?: any;
+  highlights?: string[];
+  cta?: { label?: string; href?: string };
+}
+
+interface PersonDoc {
+  _id: string;
+  name: string;
+  role?: string;
+  image?: any;
+  bio?: string;
+  socials?: { github?: string; linkedin?: string; twitter?: string; website?: string };
+}
+
+interface OrganizerDoc {
+  _id: string;
+  name: string;
+  logo?: any;
+  url?: string;
+  description?: string;
+}
+
+interface FaqDoc {
+  _id: string;
+  question: string;
+  answer: string;
+  category?: string;
+  order?: number;
+}
+
+export default function Phone98({ events, about, leaders, organizers, faqs, announcements, prizes, sponsors, rulesPage, settings }: {
+  events: ScheduleItem[];
+  about: AboutDoc | null;
+  leaders: PersonDoc[];
+  organizers: OrganizerDoc[];
+  faqs: FaqDoc[];
+  announcements: { _id: string; title: string; date?: string; time?: string; pinned?: boolean; level?: string; _updatedAt?: string }[];
+  prizes: { _id: string; name: string; amount: string; by?: string; tier?: string; desc?: string }[];
+  sponsors: { _id: string; name: string; tier: string; logo?: any; url?: string }[];
+  rulesPage: { _id: string; title?: string; core?: string[]; conduct?: string[]; submissions?: string[]; eligibility?: string[]; note?: string } | null;
+  settings: { _id: string; registerUrl?: string } | null;
+}) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [boot, setBoot] = useState(true);
   const [errors, setErrors] = useState<{ id: number; message: string }[]>([]);
@@ -44,12 +91,12 @@ export default function Phone98({ events }: { events: ScheduleItem[] }) {
   const [popupChance, setPopupChance] = useState<number>(0.8);
 
   const scheduleContent = (<ScheduleWindow events={events} />);
-  const aboutContent = (<AboutWindow />);
-  const prizesContent = (<PrizesWindow />);
-  const rulesContent = (<RulesWindow />);
-  const sponsorsContent = (<SponsorsWindow />);
-  const announcementsContent = (<AnnouncementsWindow />);
-  const registerContent = (<RegisterWindow />);
+  const aboutContent = (<AboutWindow about={about} leaders={leaders} organizers={organizers} faqs={faqs} />);
+  const prizesContent = (<PrizesWindow prizes={prizes} />);
+  const rulesContent = (<RulesWindow rules={rulesPage || undefined} />);
+  const sponsorsContent = (<SponsorsWindow sponsors={sponsors} />);
+  const announcementsContent = (<AnnouncementsWindow announcements={announcements} />);
+  const registerContent = (<RegisterWindow registerUrl={settings?.registerUrl} />);
   const crtContent = (<CRTSettings />);
 
   const items = useMemo(() => ([
@@ -251,7 +298,7 @@ export default function Phone98({ events }: { events: ScheduleItem[] }) {
       {/* Bottom countdown timer (above footer, only on home) */}
       {activeId === null && (
         <div className="fixed left-0 right-0 bottom-12 z-40 flex justify-center">
-          <CountdownTimer target={new Date("2026-02-11T00:00:00")} label="Hackathon starts in:" compact />
+          <CountdownTimer target={new Date("2026-02-25T00:00:00")} label="Hackathon starts in:" compact />
         </div>
       )}
     </div>
