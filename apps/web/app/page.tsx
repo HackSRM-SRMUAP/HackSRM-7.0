@@ -1,4 +1,6 @@
 import { client } from '@/lib/sanity';
+export const revalidate = 0;
+export const dynamic = 'force-dynamic';
 import { SCHEDULE_QUERY, ABOUT_PAGE_QUERY, LEADERSHIP_QUERY, ORGANIZERS_QUERY, FAQS_QUERY, ANNOUNCEMENTS_QUERY, PRIZES_QUERY, SPONSORS_QUERY, RULES_PAGE_QUERY, SETTINGS_QUERY } from '@/lib/queries';
 import HomeClient from "@/components/HomeClient";
 
