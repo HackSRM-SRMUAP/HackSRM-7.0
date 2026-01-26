@@ -18,8 +18,8 @@ export default defineConfig({
   title: 'hacksrm-studio',
   icon: HackSRMIcon,
 
-  projectId: process.env.SANITY_PROJECT_ID!,
-  dataset: process.env.SANITY_DATASET!,
+  projectId: 'vrujefqh',
+  dataset: 'production',
 
   plugins: [structureTool(), visionTool()],
 
