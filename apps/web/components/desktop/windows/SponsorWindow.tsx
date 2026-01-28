@@ -7,7 +7,7 @@ export default function SponsorWindow({ sponsor }: { sponsor: any }) {
       <div className="flex items-center gap-4">
         <img
           src={typeof sponsor.logo === "string" ? sponsor.logo : (urlFor(sponsor.logo)?.width(300).height(150).url() || "")}
-          alt={`${sponsor.name} logo`}
+          alt={`${sponsor.alt}`}
           width={160}
           height={80}
           className="bg-white/80 p-2 shadow-inner"
