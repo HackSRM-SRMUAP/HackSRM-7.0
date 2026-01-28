@@ -88,7 +88,8 @@ interface SettingsDoc {
 }
 
 export default async function Home() {
-  const [events, about, leaders, organizers, faqs, announcements, prizes, sponsors, rulesPage, settings] = await Promise.all([
+
+  const [events, about, leaders, organizers, faqs, announcements, prizes, sponsors, rulesPage, settings, slugData] = await Promise.all([
     client.fetch<ScheduleItem[]>(SCHEDULE_QUERY),
     client.fetch<AboutDoc | null>(ABOUT_PAGE_QUERY),
     client.fetch<PersonDoc[]>(LEADERSHIP_QUERY),
@@ -99,7 +100,11 @@ export default async function Home() {
     client.fetch<SponsorDoc[]>(SPONSORS_QUERY),
     client.fetch<RulesPageDoc | null>(RULES_PAGE_QUERY),
     client.fetch<SettingsDoc | null>(SETTINGS_QUERY),
+    client.fetch(`*[_type == "settings"][0]{devfolioSlug}`)
   ]);
+
+  const devfolioSlug = slugData?.devfolioSlug || "hack-srm26";
+  
   return <HomeClient
     events={events}
     about={about}
@@ -111,5 +116,6 @@ export default async function Home() {
     sponsors={sponsors}
     rulesPage={rulesPage}
     settings={settings}
+    slug={devfolioSlug}
   />;
 }

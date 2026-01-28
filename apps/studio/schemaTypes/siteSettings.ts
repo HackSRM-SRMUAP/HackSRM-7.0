@@ -5,7 +5,9 @@ export const siteSettings = defineType({
   title: 'Site Settings',
   type: 'document',
   fields: [
+    defineField({ name: 'title', title: 'Title', type: 'string', initialValue: 'README.txt' }),
+    defineField({ name: 'devfolioSlug', title: 'Devfolio Slug', type: 'string' }),
     defineField({ name: 'registerUrl', title: 'Registration URL', type: 'url' }),
   ],
-  preview: { select: { title: 'registerUrl' } },
+  preview: { select: { title: 'title' } },
 })

@@ -6,22 +6,29 @@ export default function SystemErrorBanner({
   lowerZ = false,
   messages,
   intervalMs = 6000,
+  slug, // <--- Add the slug prop here
 }: {
   lowerZ?: boolean;
   messages?: string[];
   intervalMs?: number;
+  slug: string; // Ensure this is passed from your layout/page
 }) {
   const [visible, setVisible] = useState(true);
   const [idx, setIdx] = useState(0);
 
-  // Persist until the user explicitly closes
   useEffect(() => {
-    if (!messages || messages.length === 0) return;
-    const iv = window.setInterval(() => {
-      setIdx((i) => (i + 1) % messages.length);
-    }, Math.max(2500, intervalMs));
-    return () => clearInterval(iv);
-  }, [messages, intervalMs]);
+    const script = document.createElement("script");
+    script.src = "https://apply.devfolio.co/v2/sdk.js";
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    }
+    // script.onload = () => {
+    //   if (window.devfolio) window.devfolio.init();
+    // };
+  }, [slug]);
 
   if (!visible) return null;
 
@@ -36,21 +43,23 @@ export default function SystemErrorBanner({
           <div className="flex items-center gap-3">
             <span className="inline-block w-2 h-6 bg-red-600 animate-blink" />
             <GlitchText text="SYSTEM NOTICE" className="text-rose-500 font-bold text-lg glow-text" />
-            <span className="text-[#33ff00] text-sm glow-text">
-              {messages && messages.length > 0 ? (
-                messages[idx]
-              ) : (
-                <>Open <strong>Register.exe</strong> to register</>
-              )}
-            </span>
+            
+            {/* Devfolio Button replaces the static text */}
+            <div 
+              className="apply-button" 
+              data-hackathon-slug={slug} 
+              data-button-theme="dark" // 'dark' fits your black/red theme better
+              style={{ height: "32px", width: "150px" }} // Scaled down for the banner
+            />
           </div>
-          <button
-            className="text-black bg-red-500 hover:bg-red-400 px-2 py-1 font-bold shadow-[0_0_10px_rgba(255,0,0,0.5)]"
+          
+          {/* <button
+            className="text-black bg-red-500 hover:bg-red-400 px-2 py-1 font-bold shadow-[0_0_10px_rgba(255,0,0,0.5)] transition-colors"
             onClick={() => setVisible(false)}
             aria-label="Dismiss system error banner"
           >
             CLOSE
-          </button>
+          </button> */}
         </div>
         {/* hazard stripes */}
         <div className="h-2 bg-[repeating-linear-gradient(135deg,rgba(255,0,0,1)_0px,rgba(255,0,0,1)_10px,transparent_10px,transparent_20px)]" />

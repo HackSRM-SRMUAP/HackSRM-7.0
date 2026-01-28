@@ -72,7 +72,7 @@ interface FaqDoc {
   order?: number;
 }
 
-export default function Phone98({ events, about, leaders, organizers, faqs, announcements, prizes, sponsors, rulesPage, settings }: {
+export default function Phone98({ events, about, leaders, organizers, faqs, announcements, prizes, sponsors, rulesPage, settings, slug }: {
   events: ScheduleItem[];
   about: AboutDoc | null;
   leaders: PersonDoc[];
@@ -83,6 +83,7 @@ export default function Phone98({ events, about, leaders, organizers, faqs, anno
   sponsors: { _id: string; name: string; tier: string; logo?: any; url?: string }[];
   rulesPage: { _id: string; title?: string; core?: string[]; conduct?: string[]; submissions?: string[]; eligibility?: string[]; note?: string } | null;
   settings: { _id: string; registerUrl?: string } | null;
+  slug: string;
 }) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [boot, setBoot] = useState(true);
@@ -215,7 +216,7 @@ export default function Phone98({ events, about, leaders, organizers, faqs, anno
       }}
     >
       {/* Top bar */}
-      <SystemErrorBanner lowerZ={false} messages={messages} intervalMs={8000} />
+      <SystemErrorBanner lowerZ={false} messages={messages} intervalMs={8000} slug={slug}/>
       {/* Spacer to keep content below fixed banner */}
       <div className="h-14" aria-hidden="true" />
       {/* Contrast overlay for readability */}
