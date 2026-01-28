@@ -9,14 +9,3 @@ declare module '*.css' {
   const content: void;
   export default content;
 }
-
-// Your Devfolio Global
-declare global {
-  interface Window {
-    devfolio: {
-      init: () => void;
-    };
-  }
-}
-
-export {};
