@@ -2,7 +2,7 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import BootScreen from "@/components/desktop/BootScreen";
 import DesktopIcon from "@/components/desktop/DesktopIcon";
-import Window98, { type WindowItem } from "@/components/desktop/Window98";
+import Window98, { type WindowItem } from "@/components/desktop/Window98"; 
 import Taskbar98 from "@/components/desktop/Taskbar98";
 import SystemErrorBanner from "@/components/ui/SystemErrorBanner";
 import CountdownTimer from "@/components/ui/CountdownTimer";
@@ -17,7 +17,7 @@ import SponsorsWindow from "@/components/desktop/windows/SponsorsWindow";
 import RegisterWindow from "@/components/desktop/windows/RegisterWindow";
 import RecycleWindow from "@/components/desktop/windows/RecycleWindow";
 import SponsorWindow from "@/components/desktop/windows/SponsorWindow";
-import { urlFor } from "@/lib/sanity";
+import { client, urlFor } from "@/lib/sanity";
 
 function ErrorPopup({ message, onClose }: { message: string; onClose: () => void }) {
   return (
@@ -76,7 +76,7 @@ interface FaqDoc {
   order?: number;
 }
 
-export default function Desktop98({ events, about, leaders, organizers, faqs, announcements, prizes, sponsors, rulesPage, settings }: {
+export default function Desktop98({ events, about, leaders, organizers, faqs, announcements, prizes, sponsors, rulesPage, settings, slug }: {
   events: ScheduleItem[];
   about: AboutDoc | null;
   leaders: PersonDoc[];
@@ -87,6 +87,7 @@ export default function Desktop98({ events, about, leaders, organizers, faqs, an
   sponsors: { _id: string; name: string; tier: string; logo?: any; url?: string }[];
   rulesPage: { _id: string; title?: string; core?: string[]; conduct?: string[]; submissions?: string[]; eligibility?: string[]; note?: string } | null;
   settings: { _id: string; registerUrl?: string } | null;
+  slug: string;
 }) {
   const [boot, setBoot] = useState(true);
   const [startMenu, setStartMenu] = useState(false);
@@ -104,40 +105,42 @@ export default function Desktop98({ events, about, leaders, organizers, faqs, an
   const tiers = ["All", "Platinum", "Gold", "Silver", "Community"];
   const tierBadgeClass = (t: string) => (
     t === "Platinum" ? "bg-gray-300 text-gray-800 border-gray-400" :
-    t === "Gold" ? "bg-amber-200 text-amber-900 border-amber-300" :
-    t === "Silver" ? "bg-slate-200 text-slate-900 border-slate-300" :
-    t === "Community" ? "bg-green-200 text-green-900 border-green-300" :
-    "bg-white text-black border-gray-300"
+      t === "Gold" ? "bg-amber-200 text-amber-900 border-amber-300" :
+        t === "Silver" ? "bg-slate-200 text-slate-900 border-slate-300" :
+          t === "Community" ? "bg-green-200 text-green-900 border-green-300" :
+            "bg-white text-black border-gray-300"
   );
-    // Lightweight click sound for empty desktop areas (WebAudio)
-    const audioCtxRef = useRef<AudioContext | null>(null);
-    const ensureAudio = () => {
-      if (!audioCtxRef.current) {
-        const AC = (window as any).AudioContext || (window as any).webkitAudioContext;
-        if (AC) audioCtxRef.current = new AC();
-      }
+  
+  
+  // Lightweight click sound for empty desktop areas (WebAudio)
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const ensureAudio = () => {
+    if (!audioCtxRef.current) {
+      const AC = (window as any).AudioContext || (window as any).webkitAudioContext;
+      if (AC) audioCtxRef.current = new AC();
+    }
+  };
+  const playClickSound = () => {
+    ensureAudio();
+    const ctx = audioCtxRef.current;
+    if (!ctx) return;
+    const startPlay = () => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "square";
+      osc.frequency.value = 850;
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.07);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.08);
     };
-    const playClickSound = () => {
-      ensureAudio();
-      const ctx = audioCtxRef.current;
-      if (!ctx) return;
-      const startPlay = () => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = "square";
-        osc.frequency.value = 850;
-        gain.gain.setValueAtTime(0.12, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.07);
-        osc.connect(gain).connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.08);
-      };
-      if (ctx.state === "suspended") {
-        ctx.resume().then(startPlay).catch(() => {});
-      } else {
-        startPlay();
-      }
-    };
+    if (ctx.state === "suspended") {
+      ctx.resume().then(startPlay).catch(() => { });
+    } else {
+      startPlay();
+    }
+  };
   const bannerMessages = useMemo(() => ([
     "Open About.exe to learn about HACK SRM",
     "Open Schedule.exe to view event timings",
@@ -158,7 +161,7 @@ export default function Desktop98({ events, about, leaders, organizers, faqs, an
       const ch = Number(localStorage.getItem("popup.chance") || "");
       if (!Number.isNaN(iv) && iv > 0) setPopupInterval(iv);
       if (!Number.isNaN(ch) && ch >= 0 && ch <= 1) setPopupChance(ch);
-    } catch {}
+    } catch { }
     const onSettings = (e: Event) => {
       const anyE = e as CustomEvent<{ interval?: number; chance?: number }>;
       if (anyE?.detail?.interval) setPopupInterval(anyE.detail.interval);
@@ -259,7 +262,7 @@ export default function Desktop98({ events, about, leaders, organizers, faqs, an
         }
       }}
     >
-      <SystemErrorBanner lowerZ={anyMaximized} messages={bannerMessages} intervalMs={7000} />
+      <SystemErrorBanner lowerZ={anyMaximized} messages={bannerMessages} intervalMs={7000} slug={slug} />
       {/* Countdown widget (positioned to the right, before sidebar) */}
       <div className="fixed z-40" style={{ top: "4.5rem", right: "19rem" }}>
         <CountdownTimer target={new Date("2026-02-25T00:00:00")} label="Hackathon starts in:" />
@@ -290,7 +293,7 @@ export default function Desktop98({ events, about, leaders, organizers, faqs, an
       {/* Sponsors sidebar */}
       <aside className={"absolute top-[4.5rem] right-4 bottom-12 w-70 z-30 overflow-hidden"}>
         <div className="win98-window h-full flex flex-col shadow-[0_0_12px_rgba(0,0,0,0.25)]">
-          <div className="win98-titlebar flex justify-between items-center" style={{backgroundImage: "linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(0,0,0,0.10))"}}>
+          <div className="win98-titlebar flex justify-between items-center" style={{ backgroundImage: "linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(0,0,0,0.10))" }}>
             <div className="flex items-center gap-2">
               <span className="inline-block w-2 h-2 rounded-full bg-green-600 animate-blink" />
               <span className="font-bold">Sponsors</span>
@@ -317,59 +320,59 @@ export default function Desktop98({ events, about, leaders, organizers, faqs, an
               </button>
             </div>
             <div className="overflow-auto no-scrollbar overflow-x-hidden">
-            <ul className="space-y-1 pr-1">
-              {(sponsorTier === "All" ? sponsors : sponsors.filter(s => s.tier === sponsorTier)).map((s) => (
-                <li key={(s as any)._id ?? (s as any).id ?? (s as any).name}>
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    className="w-full text-left text-xs bg-white/80 hover:bg-white px-2 py-2 border border-gray-500 flex items-start gap-2 min-w-0 transition duration-100 hover:shadow-sm"
-                    onClick={() => {
-                      const safeX = Math.max(24, window.innerWidth - 680 - 96);
-                      const safeY = 80;
-                      openWindow(
-                        `sponsor-${(s as any)._id ?? (s as any).id ?? (s as any).name}`,
-                        `${s.name}.html`,
-                        <SponsorWindow sponsor={s as any} />,
-                        { x: safeX, y: safeY }
-                      );
-                    }}
+              <ul className="space-y-1 pr-1">
+                {(sponsorTier === "All" ? sponsors : sponsors.filter(s => s.tier === sponsorTier)).map((s) => (
+                  <li key={(s as any)._id ?? (s as any).id ?? (s as any).name}>
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      className="w-full text-left text-xs bg-white/80 hover:bg-white px-2 py-2 border border-gray-500 flex items-start gap-2 min-w-0 transition duration-100 hover:shadow-sm"
+                      onClick={() => {
+                        const safeX = Math.max(24, window.innerWidth - 680 - 96);
+                        const safeY = 80;
+                        openWindow(
+                          `sponsor-${(s as any)._id ?? (s as any).id ?? (s as any).name}`,
+                          `${s.name}.html`,
+                          <SponsorWindow sponsor={s as any} />,
+                          { x: safeX, y: safeY }
+                        );
+                      }}
                     >
-                    <img
-                      src={typeof (s as any).logo === "string"
-                        ? (s as any).logo
-                        : (urlFor((s as any).logo)?.width(200).fit('max').url() || "")}
-                      alt=""
-                      className="bg-white/80 w-20 h-12 object-contain p-1 flex-shrink-0 border border-gray-300"
-                    />
-                    <div className="flex flex-col min-w-0">
-                      <span className="font-semibold truncate whitespace-nowrap overflow-hidden text-ellipsis">{s.name}</span>
-                      <span className={`mt-1 text-[10px] px-1 rounded border ${tierBadgeClass(s.tier)}`}>{s.tier}</span>
-                      <button
-                        className="mt-2 w-fit px-2 py-1 text-[11px] bg-gray-100 hover:bg-white border border-gray-500 shadow active:translate-y-[1px]"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const safeX = Math.max(24, window.innerWidth - 680 - 96);
-                          const safeY = 80;
-                          openWindow(
-                            `sponsor-${(s as any)._id ?? (s as any).id ?? (s as any).name}`,
-                            `${s.name}.html`,
-                            <SponsorWindow sponsor={s as any} />,
-                            { x: safeX, y: safeY }
-                          );
-                        }}
-                      >
-                        Click me for details
-                      </button>
+                      <img
+                        src={typeof (s as any).logo === "string"
+                          ? (s as any).logo
+                          : (urlFor((s as any).logo)?.width(200).fit('max').url() || "")}
+                        alt=""
+                        className="bg-white/80 w-20 h-12 object-contain p-1 flex-shrink-0 border border-gray-300"
+                      />
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-semibold truncate whitespace-nowrap overflow-hidden text-ellipsis">{s.name}</span>
+                        <span className={`mt-1 text-[10px] px-1 rounded border ${tierBadgeClass(s.tier)}`}>{s.tier}</span>
+                        <button
+                          className="mt-2 w-fit px-2 py-1 text-[11px] bg-gray-100 hover:bg-white border border-gray-500 shadow active:translate-y-[1px]"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const safeX = Math.max(24, window.innerWidth - 680 - 96);
+                            const safeY = 80;
+                            openWindow(
+                              `sponsor-${(s as any)._id ?? (s as any).id ?? (s as any).name}`,
+                              `${s.name}.html`,
+                              <SponsorWindow sponsor={s as any} />,
+                              { x: safeX, y: safeY }
+                            );
+                          }}
+                        >
+                          Click me for details
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                  </li>
+                ))}
+              </ul>
             </div>
             {/* Compact footer status strip */}
             <div className="mt-2 border-t border-gray-400 text-black text-[10px] px-2 py-1 flex items-center justify-between"
-                 style={{background: "linear-gradient(to bottom, rgba(255,255,255,0.35), rgba(255,255,255,0.08)), #C0C0C0"}}>
+              style={{ background: "linear-gradient(to bottom, rgba(255,255,255,0.35), rgba(255,255,255,0.08)), #C0C0C0" }}>
               <div className="flex items-center gap-2">
                 <span className="inline-block w-2 h-2 rounded-full bg-green-600 animate-blink" />
                 <span>
