@@ -49,6 +49,19 @@ export default function AboutWindow({ about, leaders, organizers, faqs }: {
   const highlights = about?.highlights || [];
   const heroUrl = about?.heroImage ? urlFor(about.heroImage).width(1200).url() : null;
 
+  const ptComponents = {
+    marks: {
+      link: ({children, value}: any) => {
+        const href = value?.href || '#';
+        return (
+          <a href={href} target="_blank" rel="noopener noreferrer">
+            {children}
+          </a>
+        );
+      },
+    },
+  };
+
   return (
     <div className="p-4 space-y-4 text-black">
       <div>
@@ -64,7 +77,7 @@ export default function AboutWindow({ about, leaders, organizers, faqs }: {
 
       {about?.body && (
         <div className="bg-white/80 p-3 shadow-inner prose prose-sm max-w-none">
-          <PortableText value={about.body} />
+          <PortableText value={about.body} components={ptComponents} />
         </div>
       )}
 
