@@ -1,7 +1,7 @@
 import { client } from '@/lib/sanity';
 export const revalidate = 0;
 export const dynamic = 'force-dynamic';
-import { SCHEDULE_QUERY, ABOUT_PAGE_QUERY, LEADERSHIP_QUERY, ORGANIZERS_QUERY, FAQS_QUERY, ANNOUNCEMENTS_QUERY, PRIZES_QUERY, SPONSORS_QUERY, RULES_PAGE_QUERY, SETTINGS_QUERY } from '@/lib/queries';
+import { SCHEDULE_QUERY, ABOUT_PAGE_QUERY, LEADERSHIP_QUERY, TEAMS_QUERY, ORGANIZERS_QUERY, FAQS_QUERY, ANNOUNCEMENTS_QUERY, PRIZES_QUERY, SPONSORS_QUERY, RULES_PAGE_QUERY, SETTINGS_QUERY } from '@/lib/queries';
 import HomeClient from "@/components/HomeClient";
 
 // 2. Define the Type (TypeScript Expert Mode)
@@ -89,10 +89,11 @@ interface SettingsDoc {
 
 export default async function Home() {
 
-  const [events, about, leaders, organizers, faqs, announcements, prizes, sponsors, rulesPage, settings, slugData] = await Promise.all([
+  const [events, about, leaders, teams, organizers, faqs, announcements, prizes, sponsors, rulesPage, settings, slugData] = await Promise.all([
     client.fetch<ScheduleItem[]>(SCHEDULE_QUERY),
     client.fetch<AboutDoc | null>(ABOUT_PAGE_QUERY),
     client.fetch<PersonDoc[]>(LEADERSHIP_QUERY),
+    client.fetch<PersonDoc[]>(TEAMS_QUERY),
     client.fetch<OrganizerDoc[]>(ORGANIZERS_QUERY),
     client.fetch<FaqDoc[]>(FAQS_QUERY),
     client.fetch<AnnouncementDoc[]>(ANNOUNCEMENTS_QUERY),
@@ -109,6 +110,7 @@ export default async function Home() {
     events={events}
     about={about}
     leaders={leaders}
+    teams={teams}
     organizers={organizers}
     faqs={faqs}
     announcements={announcements}

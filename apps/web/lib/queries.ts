@@ -42,6 +42,28 @@ export const LEADERSHIP_QUERY = `*[_type == "person" && role in ["head", "cohead
   )
 } | order(orderRank asc, name asc)`;
 
+// Teams: all members ordered by role rank then name
+export const TEAMS_QUERY = `*[_type == "person"] {
+  _id,
+  name,
+  role,
+  image,
+  bio,
+  socials,
+  "orderRank": select(
+    role == "head" => 0,
+    role == "cohead" => 1,
+    role == "technical-lead" => 2,
+    role == "website-lead" => 3,
+    role == "pr" => 4,
+    role == "sponsors" => 5,
+    role == "smt" => 6,
+    role == "organizer" => 7,
+    role == "volunteer" => 8,
+    999
+  )
+} | order(orderRank asc, name asc)`;
+
 // Organizers
 export const ORGANIZERS_QUERY = `*[_type == "organizer"] | order(name asc) {
   _id,
