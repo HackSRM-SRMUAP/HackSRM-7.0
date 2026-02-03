@@ -43,7 +43,7 @@ export default function SystemErrorBanner({
           <div className="flex items-center gap-3">
             <span className="inline-block w-2 h-6 bg-red-600 animate-blink" />
             <GlitchText text="SYSTEM NOTICE" className="text-rose-500 font-bold text-lg glow-text" />
-            Apply on Devfolio!
+      
             {/* Devfolio Button replaces the static text */}
             <div 
               className="apply-button" 
