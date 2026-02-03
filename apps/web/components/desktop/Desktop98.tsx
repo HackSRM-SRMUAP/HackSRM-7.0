@@ -17,6 +17,8 @@ import SponsorsWindow from "@/components/desktop/windows/SponsorsWindow";
 import RegisterWindow from "@/components/desktop/windows/RegisterWindow";
 import RecycleWindow from "@/components/desktop/windows/RecycleWindow";
 import SponsorWindow from "@/components/desktop/windows/SponsorWindow";
+import FaqWindow from "@/components/desktop/windows/FaqWindow";
+import TeamsWindow from "./windows/TeamsWindow";
 import { client, urlFor } from "@/lib/sanity";
 
 function ErrorPopup({ message, onClose }: { message: string; onClose: () => void }) {
@@ -76,10 +78,11 @@ interface FaqDoc {
   order?: number;
 }
 
-export default function Desktop98({ events, about, leaders, organizers, faqs, announcements, prizes, sponsors, rulesPage, settings, slug }: {
+export default function Desktop98({ events, about, leaders, teams, organizers, faqs, announcements, prizes, sponsors, rulesPage, settings, slug }: {
   events: ScheduleItem[];
   about: AboutDoc | null;
   leaders: PersonDoc[];
+  teams: PersonDoc[];
   organizers: OrganizerDoc[];
   faqs: FaqDoc[];
   announcements: { _id: string; title: string; date?: string; time?: string; pinned?: boolean; level?: string; _updatedAt?: string }[];
@@ -217,6 +220,7 @@ export default function Desktop98({ events, about, leaders, organizers, faqs, an
 
   const scheduleContent = (<ScheduleWindow events={events} />);
   const aboutContent = (<AboutWindow about={about} leaders={leaders} organizers={organizers} faqs={faqs} />);
+  const faqContent = (<FaqWindow faqs={faqs} />);
   const prizesContent = (<PrizesWindow prizes={prizes} />);
   const rulesContent = (<RulesWindow rules={rulesPage || undefined} />);
   const sponsorsContent = (<SponsorsWindow sponsors={sponsors} />);
@@ -224,6 +228,7 @@ export default function Desktop98({ events, about, leaders, organizers, faqs, an
   const gameContent = (<RetroGameEmbed />);
   const registerContent = (<RegisterWindow registerUrl={settings?.registerUrl} />);
   const recycleContent = (<RecycleWindow />);
+  const teamsContent = (<TeamsWindow members={teams} organizers={organizers} />);
 
   const icons = useMemo(() => ([
     { id: "about", title: "About.exe", pixelName: "about" as const, pixelColor: "#0000cc", content: aboutContent },
@@ -234,14 +239,27 @@ export default function Desktop98({ events, about, leaders, organizers, faqs, an
     { id: "prizes", title: "Prizes.exe", pixelName: "prizes" as const, pixelColor: "#ff00ff", content: prizesContent },
     { id: "rules", title: "Rules.txt", pixelName: "rules" as const, pixelColor: "#cccccc", content: rulesContent },
     { id: "ann", title: "Announcements.log", pixelName: "ann" as const, pixelColor: "#ff3300", content: announcementsContent },
+    { id: "teams", title: "Teams.exe", pixelName: "teams" as const, pixelColor: "#3366ff", content: teamsContent },
+    { id: "faq", title: "FAQ.txt", pixelName: "faq" as const, pixelColor: "#66ccff", content: faqContent },
     { id: "sponsors", title: "Sponsors.html", pixelName: "sponsors" as const, pixelColor: "#00aaff", content: sponsorsContent },
     { id: "register", title: "Register.exe", pixelName: "register" as const, pixelColor: "#33ffaa", content: registerContent },
   ]), []);
 
-  // No auto-open windows after boot; user opens via desktop icons
+  // Listen for global events to open specific windows (e.g., from child components)
   useEffect(() => {
-    // intentionally left blank
-  }, [boot]);
+    const onOpenFaq = () => {
+      openWindow("faq", "FAQ.txt", faqContent);
+    };
+    const onOpenPrizes = () => {
+      openWindow("prizes", "Prizes.exe", prizesContent);
+    };
+    window.addEventListener("open-faq", onOpenFaq as EventListener);
+    window.addEventListener("open-prizes", onOpenPrizes as EventListener);
+    return () => {
+      window.removeEventListener("open-faq", onOpenFaq as EventListener);
+      window.removeEventListener("open-prizes", onOpenPrizes as EventListener);
+    };
+  }, [faqContent, prizesContent]);
 
   if (boot) return <BootScreen onDone={() => setBoot(false)} />;
 
@@ -426,6 +444,8 @@ export default function Desktop98({ events, about, leaders, organizers, faqs, an
           { label: "Prizes.exe", onClick: () => openWindow("prizes", "Prizes.exe", prizesContent) },
           { label: "Rules.txt", onClick: () => openWindow("rules", "Rules.txt", rulesContent) },
           { label: "Announcements.log", onClick: () => openWindow("ann", "Announcements.log", announcementsContent) },
+          { label: "Teams.exe", onClick: () => openWindow("teams", "Teams.exe", teamsContent) },
+          { label: "FAQ.txt", onClick: () => openWindow("faq", "FAQ.txt", faqContent) },
           { label: "Sponsors.html", onClick: () => openWindow("sponsors", "Sponsors.html", sponsorsContent) },
           { label: "Register.exe", onClick: () => openWindow("register", "Register.exe", registerContent) },
           { label: "Recycle Bin", onClick: () => openWindow("recycle", "Recycle Bin", recycleContent) },

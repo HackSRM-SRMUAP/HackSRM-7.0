@@ -45,10 +45,11 @@ interface FaqDoc {
   order?: number;
 }
 
-export default function HomeClient({ events, about, leaders, organizers, faqs, announcements, prizes, sponsors, rulesPage, settings, slug }: {
+export default function HomeClient({ events, about, leaders, teams, organizers, faqs, announcements, prizes, sponsors, rulesPage, settings, slug }: {
   events: ScheduleItem[];
   about: AboutDoc | null;
   leaders: PersonDoc[];
+  teams: PersonDoc[];
   organizers: OrganizerDoc[];
   faqs: FaqDoc[];
   announcements: { _id: string; title: string; date?: string; time?: string; pinned?: boolean; level?: string; _updatedAt?: string }[];
@@ -66,6 +67,6 @@ export default function HomeClient({ events, about, leaders, organizers, faqs, a
     return () => window.removeEventListener("resize", update);
   }, []);
   return isPhone
-    ? <Phone98 events={events} about={about} leaders={leaders} organizers={organizers} faqs={faqs} announcements={announcements} prizes={prizes} sponsors={sponsors} rulesPage={rulesPage} settings={settings} slug={slug}/>
-    : <Desktop98 events={events} about={about} leaders={leaders} organizers={organizers} faqs={faqs} announcements={announcements} prizes={prizes} sponsors={sponsors} rulesPage={rulesPage} settings={settings} slug={slug} />;
+    ? <Phone98 events={events} about={about} leaders={leaders} teams={teams} organizers={organizers} faqs={faqs} announcements={announcements} prizes={prizes} sponsors={sponsors} rulesPage={rulesPage} settings={settings} slug={slug}/>
+    : <Desktop98 events={events} about={about} leaders={leaders} teams={teams} organizers={organizers} faqs={faqs} announcements={announcements} prizes={prizes} sponsors={sponsors} rulesPage={rulesPage} settings={settings} slug={slug} />;
 }

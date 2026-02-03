@@ -6,12 +6,12 @@ export default function SystemErrorBanner({
   lowerZ = false,
   messages,
   intervalMs = 6000,
-  slug, // <--- Add the slug prop here
+  slug, 
 }: {
   lowerZ?: boolean;
   messages?: string[];
   intervalMs?: number;
-  slug: string; // Ensure this is passed from your layout/page
+  slug: string; 
 }) {
   const [visible, setVisible] = useState(true);
   const [idx, setIdx] = useState(0);
@@ -43,7 +43,7 @@ export default function SystemErrorBanner({
           <div className="flex items-center gap-3">
             <span className="inline-block w-2 h-6 bg-red-600 animate-blink" />
             <GlitchText text="SYSTEM NOTICE" className="text-rose-500 font-bold text-lg glow-text" />
-            
+            Apply on Devfolio!
             {/* Devfolio Button replaces the static text */}
             <div 
               className="apply-button" 

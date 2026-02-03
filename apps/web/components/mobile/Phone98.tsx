@@ -13,6 +13,8 @@ import SystemErrorBanner from "@/components/ui/SystemErrorBanner";
 import CountdownTimer from "@/components/ui/CountdownTimer";
 import CRTSettings from "@/components/desktop/CRTSettings";
 import DesktopIcon from "@/components/desktop/DesktopIcon";
+import FaqWindow from "@/components/desktop/windows/FaqWindow";
+import TeamsWindow from "@/components/desktop/windows/TeamsWindow";
 const pixelFont = VT323({ subsets: ["latin"], weight: "400" });
 
 function ErrorPopup({ message, onClose }: { message: string; onClose: () => void }) {
@@ -72,10 +74,11 @@ interface FaqDoc {
   order?: number;
 }
 
-export default function Phone98({ events, about, leaders, organizers, faqs, announcements, prizes, sponsors, rulesPage, settings, slug }: {
+export default function Phone98({ events, about, leaders, teams, organizers, faqs, announcements, prizes, sponsors, rulesPage, settings, slug }: {
   events: ScheduleItem[];
   about: AboutDoc | null;
   leaders: PersonDoc[];
+  teams: PersonDoc[];
   organizers: OrganizerDoc[];
   faqs: FaqDoc[];
   announcements: { _id: string; title: string; date?: string; time?: string; pinned?: boolean; level?: string; _updatedAt?: string }[];
@@ -99,6 +102,8 @@ export default function Phone98({ events, about, leaders, organizers, faqs, anno
   const announcementsContent = (<AnnouncementsWindow announcements={announcements} />);
   const registerContent = (<RegisterWindow registerUrl={settings?.registerUrl} />);
   const crtContent = (<CRTSettings />);
+  const faqContent = (<FaqWindow faqs={faqs} />);
+  const teamsContent = (<TeamsWindow members={teams} organizers={organizers} />);
 
   const items = useMemo(() => ([
     { id: "about", title: "About.exe", content: aboutContent },
@@ -106,6 +111,8 @@ export default function Phone98({ events, about, leaders, organizers, faqs, anno
     { id: "prizes", title: "Prizes.exe", content: prizesContent },
     { id: "rules", title: "Rules.txt", content: rulesContent },
     { id: "ann", title: "Announcements.log", content: announcementsContent },
+    { id: "teams", title: "Teams.exe", content: teamsContent },
+    { id: "faq", title: "FAQ.txt", content: faqContent },
     { id: "sponsors", title: "Sponsors.html", content: sponsorsContent },
     { id: "register", title: "Register.exe", content: registerContent },
     { id: "crt-settings", title: "CRT Settings.exe", content: crtContent },
@@ -118,6 +125,8 @@ export default function Phone98({ events, about, leaders, organizers, faqs, anno
     { id: "prizes", title: "Prizes.exe", pixelName: "prizes" as const, pixelColor: "#ff00ff" },
     { id: "rules", title: "Rules.txt", pixelName: "rules" as const, pixelColor: "#cccccc" },
     { id: "ann", title: "Announcements.log", pixelName: "ann" as const, pixelColor: "#ff3300" },
+    { id: "teams", title: "Teams.exe", pixelName: "teams" as const, pixelColor: "#3366ff" },
+    { id: "faq", title: "FAQ.txt", pixelName: "faq" as const, pixelColor: "#66ccff" },
     { id: "sponsors", title: "Sponsors.html", pixelName: "sponsors" as const, pixelColor: "#00aaff" },
     { id: "register", title: "Register.exe", pixelName: "register" as const, pixelColor: "#33ffaa" },
     { id: "crt-settings", title: "CRT Settings.exe", pixelName: "settings" as const, pixelColor: "#00ffff" },
@@ -174,6 +183,18 @@ export default function Phone98({ events, about, leaders, organizers, faqs, anno
     };
     window.addEventListener("popup-settings", onSettings);
     return () => window.removeEventListener("popup-settings", onSettings);
+  }, []);
+
+  // Listen for global events to open specific views (e.g., from child components)
+  useEffect(() => {
+    const onOpenFaq = () => setActiveId("faq");
+    const onOpenPrizes = () => setActiveId("prizes");
+    window.addEventListener("open-faq", onOpenFaq as EventListener);
+    window.addEventListener("open-prizes", onOpenPrizes as EventListener);
+    return () => {
+      window.removeEventListener("open-faq", onOpenFaq as EventListener);
+      window.removeEventListener("open-prizes", onOpenPrizes as EventListener);
+    };
   }, []);
 
   // Non-blocking mobile popups
