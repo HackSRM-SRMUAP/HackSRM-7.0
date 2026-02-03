@@ -50,6 +50,18 @@ export default function AboutWindow({ about, leaders, organizers, faqs }: {
   const heroUrl = about?.heroImage ? urlFor(about.heroImage).width(1200).url() : null;
 
   const ptComponents = {
+    block: {
+      normal: ({children, value}: any) => {
+        const hasText = Array.isArray(value?.children)
+          ? value.children.some((c: any) => typeof c?.text === 'string' && c.text.trim().length > 0)
+          : false;
+        if (!hasText) {
+          // Render a subtle blank line when the block has no text
+          return <p className="my-2"><br /></p>;
+        }
+        return <p>{children}</p>;
+      },
+    },
     marks: {
       link: ({children, value}: any) => {
         const href = value?.href || '#';
@@ -155,19 +167,19 @@ export default function AboutWindow({ about, leaders, organizers, faqs }: {
         </div>
       )}
 
-      {faqs?.length > 0 && (
-        <div className="bg-white/80 p-3 shadow-inner">
-          <div className="font-semibold mb-2">FAQs</div>
-          <ul className="space-y-2">
-            {faqs.map((f) => (
-              <li key={f._id}>
-                <div className="text-sm font-medium">Q: {f.question}</div>
-                <div className="text-sm mt-1">{f.answer}</div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <div className="text-xs text-gray-800 bg-[#FFFBEA] border border-black/20 p-2 flex items-center justify-between gap-2">
+        <span>Refer FAQ for most common doubts.</span>
+        <button
+          className="win98-btn text-black px-2 py-1"
+          onClick={() => {
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('open-faq'));
+            }
+          }}
+        >
+          Open FAQ.txt
+        </button>
+      </div>
 
       {about?.cta?.label && about?.cta?.href && (
         <div>
