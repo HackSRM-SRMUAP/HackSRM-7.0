@@ -21,6 +21,7 @@ function formatRemaining(ms: number) {
 export default function CountdownTimer({ target, label, compact }: CountdownProps) {
   const targetTime = useMemo(() => (typeof target === "string" ? new Date(target) : target), [target]);
   const [now, setNow] = useState(() => Date.now());
+  const [isCollapsed, setIsCollapsed] = useState(compact); // Default to collapsed if compact
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
@@ -32,7 +33,7 @@ export default function CountdownTimer({ target, label, compact }: CountdownProp
   const done = remainingMs <= 0;
 
   return (
-    <div className="relative w-[280px]">
+    <div className={`relative transition-all duration-300 ${isCollapsed ? "w-[180px]" : "w-[280px]"} pointer-events-auto`}>
       {/* Neon gradient aura */}
       <div
         className="absolute inset-0 -z-10 pointer-events-none"
@@ -43,14 +44,49 @@ export default function CountdownTimer({ target, label, compact }: CountdownProp
           opacity: 0.35,
         }}
       />
-      <div className="rounded-md border border-fuchsia-500/60 bg-black/70 backdrop-blur-sm shadow-[0_0_18px_rgba(255,0,255,0.35)]">
+      <div 
+        className="rounded-md border border-fuchsia-500/60 bg-black/70 backdrop-blur-sm shadow-[0_0_18px_rgba(255,0,255,0.35)] cursor-pointer overflow-hidden"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+      >
         <div className={compact ? "px-2 pt-1 pb-0 flex items-center justify-between" : "px-3 pt-2 pb-1 flex items-center justify-between"}>
-          <GlitchText text="COUNTDOWN" className="text-fuchsia-400 font-bold text-sm" />
-          <div className="h-1 w-20 bg-[linear-gradient(90deg,#ff00ff,#00ffff,#33ff00)] animate-pulse opacity-60 rounded" />
+          <GlitchText text={isCollapsed ? "T-MINUS" : "COUNTDOWN"} className="text-fuchsia-400 font-bold text-[10px] sm:text-sm" />
+          <div className="flex items-center gap-1">
+            <div className={`h-1 ${isCollapsed ? "w-8" : "w-16"} bg-[linear-gradient(90deg,#ff00ff,#00ffff,#33ff00)] animate-pulse opacity-60 rounded transition-all`} />
+            <div className="flex items-center gap-1 ml-1 group/toggle">
+              <span className="text-fuchsia-400 text-[10px] items-center flex animate-pulse" style={{ filter: "drop-shadow(0 0 2px #ff00ff)" }}>
+                <svg 
+                  width="11" 
+                  height="11" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="4" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                  className={`transition-transform duration-300 ${isCollapsed ? "" : "rotate-180"}`}
+                >
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            </div>
+          </div>
         </div>
+        
         <div className={compact ? "px-2 pb-1" : "px-3 pb-3"}>
           {done ? (
-            <div className={compact ? "text-lg font-bold glow-text text-[#33ff00]" : "text-base font-bold glow-text text-[#33ff00]"}>Hackathon Day!</div>
+            <div className={compact ? "text-sm font-bold glow-text text-[#33ff00]" : "text-base font-bold glow-text text-[#33ff00]"}>Hackathon Day!</div>
+          ) : isCollapsed ? (
+            <div className="flex flex-col">
+              <div className="text-[#33ff00] font-mono text-xs flex justify-between items-center py-1">
+                <span>{days}d</span>
+                <span>{String(hours).padStart(2, "0")}h</span>
+                <span>{String(minutes).padStart(2, "0")}m</span>
+                <span className="flicker">{String(seconds).padStart(2, "0")}s</span>
+              </div>
+              <div className="text-fuchsia-400/40 text-[8px] text-center animate-pulse uppercase tracking-tighter">
+                Click to expand
+              </div>
+            </div>
           ) : (
             <>
               <div className={compact ? "text-base text-fuchsia-200" : "text-[11px] text-fuchsia-200"}>

@@ -49,7 +49,7 @@ export default function SystemErrorBanner({
               className="apply-button" 
               data-hackathon-slug={slug} 
               data-button-theme="dark" // 'dark' fits your black/red theme better
-              style={{ height: "32px", width: "150px" }} // Scaled down for the banner
+              style={{ height: "32px", width: "100px" }} // Scaled down for the banner
             />
           </div>
           
