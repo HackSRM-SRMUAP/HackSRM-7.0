@@ -17,6 +17,9 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "HackSRM 7.0",
   description: "National Level Hackathon organized by SRM University-AP",
+  verification: {
+    google: "f5JSRxDD7n7D80X-6dMgtK3i1UKjbxC9PxTDksBT5oE",
+  }
 };
 
 export default function RootLayout({
