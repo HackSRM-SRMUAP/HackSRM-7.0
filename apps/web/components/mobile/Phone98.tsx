@@ -124,12 +124,12 @@ export default function Phone98({ events, about, leaders, teams, organizers, faq
     { id: "schedule", title: "Schedule.exe", pixelName: "schedule" as const, pixelColor: "#ffcc00" },
     { id: "prizes", title: "Prizes.exe", pixelName: "prizes" as const, pixelColor: "#ff00ff" },
     { id: "rules", title: "Rules.txt", pixelName: "rules" as const, pixelColor: "#cccccc" },
-    { id: "ann", title: "Announcements.log", pixelName: "ann" as const, pixelColor: "#ff3300" },
     { id: "teams", title: "Teams.exe", pixelName: "teams" as const, pixelColor: "#3366ff" },
     { id: "faq", title: "FAQ.txt", pixelName: "faq" as const, pixelColor: "#66ccff" },
     { id: "sponsors", title: "Sponsors.html", pixelName: "sponsors" as const, pixelColor: "#00aaff" },
     { id: "register", title: "Register.exe", pixelName: "register" as const, pixelColor: "#33ffaa" },
     { id: "crt-settings", title: "CRT Settings.exe", pixelName: "settings" as const, pixelColor: "#00ffff" },
+    { id: "ann", title: "Announcements.log", pixelName: "ann" as const, pixelColor: "#ff3300" },
   ]), []);
 
   const messages = useMemo(() => ([
@@ -260,8 +260,8 @@ export default function Phone98({ events, about, leaders, teams, organizers, faq
 
       {/* Phone container */}
       {activeId === null ? (
-        <div className="pt-16 px-3 pb-16 max-w-md mx-auto relative z-30">
-          <div className="grid grid-cols-3 gap-x-3 gap-y-4 place-items-center">
+        <div className="pt-6 px-4 pb-30 mx-auto relative z-30 w-full max-w-screen-xl">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-x-2 gap-y-2 place-items-center">
             {mobileIcons.map(ic => (
               <DesktopIcon
                 key={ic.id}
@@ -319,7 +319,7 @@ export default function Phone98({ events, about, leaders, teams, organizers, faq
 
       {/* Bottom countdown timer (above footer, only on home) */}
       {activeId === null && (
-        <div className="fixed left-0 right-0 bottom-12 z-40 flex justify-center">
+        <div className="fixed left-0 right-0 bottom-12 z-20 flex justify-center pointer-events-none">
           <CountdownTimer target={new Date("2026-02-25T00:00:00")} label="Hackathon starts in:" compact />
         </div>
       )}

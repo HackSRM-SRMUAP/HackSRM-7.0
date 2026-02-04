@@ -61,7 +61,15 @@ export default function HomeClient({ events, about, leaders, teams, organizers, 
 }) {
   const [isPhone, setIsPhone] = useState(false);
   useEffect(() => {
-    const update = () => setIsPhone(window.innerWidth < 768 || window.innerHeight < 600);
+    const update = () => {
+      const ua = navigator.userAgent || "";
+      const isIpad = /iPad|Macintosh/i.test(ua) && (navigator as any).maxTouchPoints > 1;
+      const isMobileUA = /Android|iPhone|iPod/i.test(ua) || isIpad;
+      // Many modern tablets (iPad Pro, Air) have widths up to 1024-1366px.
+      // We'll treat anything that's a mobile UA or has touch capability with smaller screen as mobile UI.
+      const isSmallScreen = window.innerWidth <= 1180 || window.innerHeight < 600;
+      setIsPhone(isMobileUA || isSmallScreen);
+    };
     update();
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);

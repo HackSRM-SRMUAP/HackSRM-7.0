@@ -28,6 +28,7 @@ export default function DesktopIcon({ label, icon: Icon, pixelName, pixelColor, 
          <div
            className={clsx(
              "mt-1 text-center px-1 text-white group-hover:[text-shadow:0_0_3px_#ffffff,0_0_10px_rgba(255,255,255,0.6)]",
+             "w-24 break-words whitespace-normal leading-tight text-[12px] overflow-hidden",
              vt323.className
            )}
          >
