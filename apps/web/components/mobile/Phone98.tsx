@@ -319,7 +319,7 @@ export default function Phone98({ events, about, leaders, teams, organizers, faq
 
       {/* Bottom countdown timer (above footer, only on home) */}
       {activeId === null && (
-        <div className="fixed left-0 right-0 bottom-12 z-20 flex justify-center pointer-events-none">
+        <div className="fixed left-0 right-0 bottom-12 z-40 flex justify-center pointer-events-none">
           <CountdownTimer target={new Date("2026-02-25T00:00:00")} label="Hackathon starts in:" compact />
         </div>
       )}
