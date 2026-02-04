@@ -89,6 +89,32 @@ interface SettingsDoc {
 
 export default async function Home() {
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: 'HackSRM 7.0',
+    startDate: '2026-02-25T12:00',
+    endDate: '2026-02-26T17:00',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    eventStatus: 'https://schema.org/EventScheduled',
+    location: {
+      '@type': 'Place',
+      name: 'SRM University',
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: 'SRM University-AP, Neerukonda, Guntur, Amaravati, Andhra Pradesh',
+        addressLocality: 'Amaravati',
+        addressRegion: 'AP',
+        postalCode: '603203',
+        addressCountry: 'IN'
+      }
+    },
+    image: [
+      'https://hack-srm26.vercel.app/og-image.jpg' // Your banner image
+    ],
+    description: 'The 7th edition of HackSRM, a national level hackathon organized by SRM University-AP',
+  }
+
   const [events, about, leaders, teams, organizers, faqs, announcements, prizes, sponsors, rulesPage, settings, slugData] = await Promise.all([
     client.fetch<ScheduleItem[]>(SCHEDULE_QUERY),
     client.fetch<AboutDoc | null>(ABOUT_PAGE_QUERY),
@@ -105,19 +131,25 @@ export default async function Home() {
   ]);
 
   const devfolioSlug = slugData?.devfolioSlug || "hack-srm26";
-  
-  return <HomeClient
-    events={events}
-    about={about}
-    leaders={leaders}
-    teams={teams}
-    organizers={organizers}
-    faqs={faqs}
-    announcements={announcements}
-    prizes={prizes}
-    sponsors={sponsors}
-    rulesPage={rulesPage}
-    settings={settings}
-    slug={devfolioSlug}
-  />;
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <HomeClient
+
+        events={events}
+        about={about}
+        leaders={leaders}
+        teams={teams}
+        organizers={organizers}
+        faqs={faqs}
+        announcements={announcements}
+        prizes={prizes}
+        sponsors={sponsors}
+        rulesPage={rulesPage}
+        settings={settings}
+        slug={devfolioSlug}
+      />
+    </>
+  );
 }
