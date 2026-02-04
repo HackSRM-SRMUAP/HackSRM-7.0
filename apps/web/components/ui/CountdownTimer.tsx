@@ -50,41 +50,33 @@ export default function CountdownTimer({ target, label, compact }: CountdownProp
       >
         <div className={compact ? "px-2 pt-1 pb-0 flex items-center justify-between" : "px-3 pt-2 pb-1 flex items-center justify-between"}>
           <GlitchText text={isCollapsed ? "T-MINUS" : "COUNTDOWN"} className="text-fuchsia-400 font-bold text-[10px] sm:text-sm" />
-          <div className="flex items-center gap-1">
-            <div className={`h-1 ${isCollapsed ? "w-8" : "w-16"} bg-[linear-gradient(90deg,#ff00ff,#00ffff,#33ff00)] animate-pulse opacity-60 rounded transition-all`} />
-            <div className="flex items-center gap-1 ml-1 group/toggle">
-              <span className="text-fuchsia-400 text-[10px] items-center flex animate-pulse" style={{ filter: "drop-shadow(0 0 2px #ff00ff)" }}>
-                <svg 
-                  width="11" 
-                  height="11" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="4" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round"
-                  className={`transition-transform duration-300 ${isCollapsed ? "" : "rotate-180"}`}
-                >
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </div>
-          </div>
+          <div className={`h-1 ${isCollapsed ? "w-12" : "w-24"} bg-[linear-gradient(90deg,#ff00ff,#00ffff,#33ff00)] animate-pulse opacity-60 rounded transition-all`} />
         </div>
         
         <div className={compact ? "px-2 pb-1" : "px-3 pb-3"}>
           {done ? (
             <div className={compact ? "text-sm font-bold glow-text text-[#33ff00]" : "text-base font-bold glow-text text-[#33ff00]"}>Hackathon Day!</div>
           ) : isCollapsed ? (
-            <div className="flex flex-col">
-              <div className="text-[#33ff00] font-mono text-xs flex justify-between items-center py-1">
+            <div className="flex flex-col items-center">
+              <span className="text-[#33ff00] animate-bounce scale-150 drop-shadow-[0_0_8px_#33ff00] my-1">
+                <svg 
+                  width="20" 
+                  height="20" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="4" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                >
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+              <div className="text-[#33ff00] font-mono text-xs flex justify-between w-full items-center py-1 border-t border-fuchsia-500/20">
                 <span>{days}d</span>
                 <span>{String(hours).padStart(2, "0")}h</span>
                 <span>{String(minutes).padStart(2, "0")}m</span>
                 <span className="flicker">{String(seconds).padStart(2, "0")}s</span>
-              </div>
-              <div className="text-fuchsia-400/40 text-[8px] text-center animate-pulse uppercase tracking-tighter">
-                Click to expand
               </div>
             </div>
           ) : (
@@ -113,6 +105,21 @@ export default function CountdownTimer({ target, label, compact }: CountdownProp
                   <div className={compact ? "text-4xl leading-tight font-mono text-[#33ff00] glow-text" : "text-2xl font-mono text-[#33ff00] glow-text"}>{String(seconds).padStart(2, "0")}</div>
                   <div className="text-[10px] uppercase tracking-wider text-cyan-200">Seconds</div>
                 </div>
+              </div>
+              <div className="flex justify-center mt-2 opacity-40 hover:opacity-100 transition-opacity">
+                <svg 
+                  width="14" 
+                  height="14" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="#33ff00" 
+                  strokeWidth="3" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                  className="rotate-180 animate-pulse"
+                >
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </div>
             </>
           )}
