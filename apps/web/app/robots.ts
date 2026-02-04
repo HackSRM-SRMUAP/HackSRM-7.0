@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://hack-srm-v7.vercel.app'
+  const baseUrl = 'https://hacksrm.in'
 
   return {
     rules: {

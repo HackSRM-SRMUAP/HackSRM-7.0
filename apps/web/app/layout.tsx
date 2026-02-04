@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'HackSRM 7.0 | National Level Hackathon',
     description: 'Join us at SRM University-AP for HackSRM 7.0. 24 hours of innovation, coding, and prizes.',
-    url: 'https://hack-srm26.vercel.app',
+    url: 'https://hacksrm.in',
     siteName: 'HackSRM 7.0',
     locale: 'en_US',
     type: 'website',

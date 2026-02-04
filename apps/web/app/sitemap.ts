@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://hack-srm-v7.vercel.app'
+  const baseUrl = 'https://hacksrm.in'
 
   return [
     {

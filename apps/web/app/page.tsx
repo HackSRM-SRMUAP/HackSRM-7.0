@@ -110,7 +110,7 @@ export default async function Home() {
       }
     },
     image: [
-      'https://hack-srm26.vercel.app/og-image.jpg' // Your banner image
+      'https://hacksrm.in/opengraph-image.jpeg'
     ],
     description: 'The 7th edition of HackSRM, a national level hackathon organized by SRM University-AP',
   }
