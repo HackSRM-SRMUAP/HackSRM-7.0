@@ -24,4 +24,7 @@ async function pingBing() {
     }
 }
 
-pingBing();
+pingBing().catch((error) => {
+    console.error("Unexpected error pinging Bing IndexNow", error);
+    process.exit(0);
+});
