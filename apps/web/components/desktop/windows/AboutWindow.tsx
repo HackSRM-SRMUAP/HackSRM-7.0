@@ -106,18 +106,22 @@ export default function AboutWindow({ about, leaders, organizers, faqs }: {
         <div className="bg-white/80 p-3 shadow-inner">
           <div className="font-semibold mb-2">Leadership</div>
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {leaders.map((p) => (
-              <li key={p._id} className="flex items-center gap-3 bg-white/70 p-2">
+            {leaders
+              .filter((p) => ["head", "cohead", "technical-lead"].includes(p.role?.toLowerCase() || ""))
+              .map((p) => (
+              <li key={p._id} className="flex items-center gap-3 bg-white/70 p-2 border border-gray-300">
                 {p.image && (
-                  <img
-                    src={urlFor(p.image).width(120).height(120).fit('crop').url()}
-                    alt={p.image?.alt || ''}
-                    className="w-16 h-16 object-cover rounded"
-                  />
+                  <div className="w-20 h-20 flex-shrink-0">
+                    <img
+                      src={urlFor(p.image).width(200).height(200).fit('crop').url()}
+                      alt={p.image?.alt || ''}
+                      className="w-full h-full object-cover rounded shadow-sm border border-gray-100"
+                    />
+                  </div>
                 )}
-                <div>
-                  <div className="font-semibold text-sm">{p.name}</div>
-                  {p.role && <div className="text-xs text-gray-700">{p.role}</div>}
+                <div className="min-w-0 flex-1">
+                  <div className="font-semibold text-sm truncate">{p.name}</div>
+                  {p.role && <div className="text-xs text-gray-700 truncate">{p.role === "cohead" ? "Co-Head" : p.role}</div>}
                   {p.bio && <div className="text-xs mt-1 line-clamp-2">{p.bio}</div>}
                   {(p.socials?.github || p.socials?.linkedin || p.socials?.twitter || p.socials?.website) && (
                     <div className="flex items-center gap-2 mt-1 text-gray-800">
@@ -150,14 +154,23 @@ export default function AboutWindow({ about, leaders, organizers, faqs }: {
         </div>
       )}
 
+      {/* 
       {organizers?.length > 0 && (
         <div className="bg-white/80 p-3 shadow-inner">
           <div className="font-semibold mb-2">Organizers</div>
           <ul className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {organizers.map((o) => (
-              <li key={o._id} className="bg-white/70 p-2 flex flex-col items-center text-center">
-                {o.logo && (<img src={urlFor(o.logo).width(160).url()} alt={o.logo?.alt || ''} className="w-24 h-auto" />)}
-                <div className="mt-1 text-sm font-medium">{o.name}</div>
+              <li key={o._id} className="bg-white/70 p-2 border border-gray-300 flex flex-col items-center text-center">
+                {o.logo && (
+                  <div className="w-24 h-16 flex items-center justify-center overflow-hidden">
+                    <img
+                      src={urlFor(o.logo).width(180).fit('max').url()}
+                      alt={o.logo?.alt || ''}
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  </div>
+                )}
+                <div className="mt-1 text-sm font-medium truncate w-full">{o.name}</div>
                 {o.url && (
                   <a href={o.url} target="_blank" rel="noreferrer" className="text-xs text-blue-700 underline">Website</a>
                 )}
@@ -166,6 +179,7 @@ export default function AboutWindow({ about, leaders, organizers, faqs }: {
           </ul>
         </div>
       )}
+      */}
 
       <div className="text-xs text-gray-800 bg-[#FFFBEA] border border-black/20 p-2 flex items-center justify-between gap-2">
         <span>Refer FAQ for most common doubts.</span>
