@@ -18,7 +18,8 @@ export const metadata: Metadata = {
   title: "HackSRM 7.0",
   description: "National Level Hackathon organized by SRM University-AP",
   verification: {
-    google: "f5JSRxDD7n7D80X-6dMgtK3i1UKjbxC9PxTDksBT5oE",
+    // google: "f5JSRxDD7n7D80X-6dMgtK3i1UKjbxC9PxTDksBT5oE",
+    google: "fOT9pjzIqakEoSFq0s2kBV4jyKolOqxMamPKgTWD4y0",
   },
   openGraph: {
     title: 'HackSRM 7.0 | National Level Hackathon',
