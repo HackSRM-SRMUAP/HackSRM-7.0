@@ -19,6 +19,7 @@ import RecycleWindow from "@/components/desktop/windows/RecycleWindow";
 import SponsorWindow from "@/components/desktop/windows/SponsorWindow";
 import FaqWindow from "@/components/desktop/windows/FaqWindow";
 import TeamsWindow from "./windows/TeamsWindow";
+import SystemRecovery from "@/components/effects/SystemRecovery";
 import { client, urlFor } from "@/lib/sanity";
 
 function ErrorPopup({ message, onClose }: { message: string; onClose: () => void }) {
@@ -102,6 +103,10 @@ export default function Desktop98({ events, about, leaders, teams, organizers, f
   const [popupInterval, setPopupInterval] = useState<number>(12000);
   const [popupChance, setPopupChance] = useState<number>(0.8);
   const [maximizedIds, setMaximizedIds] = useState<Set<string>>(new Set());
+  const [isCrashing, setIsCrashing] = useState(false);
+  const [showRecovery, setShowRecovery] = useState(false);
+  const [crashLevel, setCrashLevel] = useState(0);
+
   const anyMaximized = maximizedIds.size > 0;
   // Sidebar sponsor tier filter
   const [sponsorTier, setSponsorTier] = useState<string>("All");
@@ -152,7 +157,7 @@ export default function Desktop98({ events, about, leaders, teams, organizers, f
     "Open Announcements.log for latest updates",
     "Open Sponsors.html to explore partners",
     "Open Register.exe to register",
-    "Open Recycle Bin to manage deleted items",
+    "WARNING: UNKNOWN EXECUTABLE DETECTED - Malware.exe",
     "Launch Retro Runner.exe to play the game",
     "Open CRT Settings.exe to adjust effects and popup frequency",
   ]), []);
@@ -227,15 +232,13 @@ export default function Desktop98({ events, about, leaders, teams, organizers, f
   const announcementsContent = (<AnnouncementsWindow announcements={announcements} />);
   const gameContent = (<RetroGameEmbed />);
   const registerContent = (<RegisterWindow registerUrl={settings?.registerUrl} />);
-  const recycleContent = (<RecycleWindow />);
   const teamsContent = (<TeamsWindow members={teams} organizers={organizers} />);
 
-  const icons = useMemo(() => ([
+  const icons = useMemo(() => [
     { id: "about", title: "About.exe", pixelName: "about" as const, pixelColor: "#0000cc", content: aboutContent },
     { id: "schedule", title: "Schedule.exe", pixelName: "schedule" as const, pixelColor: "#ffcc00", content: scheduleContent },
     { id: "game", title: "Retro Runner.exe", pixelName: "game" as const, pixelColor: "#33ff00", content: gameContent },
     { id: "crt-settings", title: "CRT Settings.exe", pixelName: "settings" as const, pixelColor: "#00ffff", content: <CRTSettings /> },
-    { id: "recycle", title: "Recycle Bin", pixelName: "recycle" as const, pixelColor: "#00cc66", content: recycleContent },
     { id: "prizes", title: "Prizes.exe", pixelName: "prizes" as const, pixelColor: "#ff00ff", content: prizesContent },
     { id: "rules", title: "Rules.txt", pixelName: "rules" as const, pixelColor: "#cccccc", content: rulesContent },
     { id: "ann", title: "Announcements.log", pixelName: "ann" as const, pixelColor: "#ff3300", content: announcementsContent },
@@ -243,7 +246,8 @@ export default function Desktop98({ events, about, leaders, teams, organizers, f
     { id: "faq", title: "FAQ.txt", pixelName: "faq" as const, pixelColor: "#66ccff", content: faqContent },
     { id: "sponsors", title: "Sponsors.html", pixelName: "sponsors" as const, pixelColor: "#00aaff", content: sponsorsContent },
     { id: "register", title: "Register.exe", pixelName: "register" as const, pixelColor: "#33ffaa", content: registerContent },
-  ]), []);
+    { id: "crash", title: "Malware.exe", pixelName: "recycle" as const, pixelColor: "#ff0000", content: null },
+  ], [aboutContent, scheduleContent, gameContent, prizesContent, rulesContent, announcementsContent, teamsContent, faqContent, sponsorsContent, registerContent]);
 
   // Listen for global events to open specific windows (e.g., from child components)
   useEffect(() => {
@@ -261,17 +265,28 @@ export default function Desktop98({ events, about, leaders, teams, organizers, f
     };
   }, [faqContent, prizesContent]);
 
+  const startCrash = () => {
+    if (isCrashing) return;
+    setIsCrashing(true);
+    setCrashLevel(100);
+    // Sudden black out then show recovery screen shortly after
+    setTimeout(() => {
+      setShowRecovery(true);
+    }, 800);
+  };
+
   if (boot) return <BootScreen onDone={() => setBoot(false)} />;
+  if (showRecovery) return <SystemRecovery />;
 
   return (
     <div
-      className="fixed inset-0"
+      className={`fixed inset-0 transition-all duration-75 ${isCrashing ? "pointer-events-none select-none" : ""}`}
       style={{
-        // backgroundColor: "#000080",
         backgroundImage: "url(\"/hacksrm-logo.webp\")",
         backgroundSize: "var(--wallpaper-size, contain)",
         backgroundPosition: "var(--wallpaper-pos, center)",
         backgroundRepeat: "no-repeat",
+        filter: isCrashing ? `brightness(${100 - crashLevel}%)` : undefined,
       }}
       onMouseDown={(e) => {
         // Only play when clicking empty desktop area (not icons/windows/banner/taskbar)
@@ -304,7 +319,19 @@ export default function Desktop98({ events, about, leaders, teams, organizers, f
         }}
       >
         {icons.map(ic => (
-          <DesktopIcon key={ic.id} label={ic.title} pixelName={ic.pixelName} pixelColor={ic.pixelColor} onOpen={() => openWindow(ic.id, ic.title, ic.content)} />
+          <DesktopIcon 
+            key={ic.id} 
+            label={ic.title} 
+            pixelName={ic.pixelName} 
+            pixelColor={ic.pixelColor} 
+            onOpen={() => {
+              if (ic.id === "crash") {
+                startCrash();
+              } else {
+                openWindow(ic.id, ic.title, ic.content);
+              }
+            }} 
+          />
         ))}
       </div>
 
@@ -448,10 +475,18 @@ export default function Desktop98({ events, about, leaders, teams, organizers, f
           { label: "FAQ.txt", onClick: () => openWindow("faq", "FAQ.txt", faqContent) },
           { label: "Sponsors.html", onClick: () => openWindow("sponsors", "Sponsors.html", sponsorsContent) },
           { label: "Register.exe", onClick: () => openWindow("register", "Register.exe", registerContent) },
-          { label: "Recycle Bin", onClick: () => openWindow("recycle", "Recycle Bin", recycleContent) },
+          { label: "Malware.exe", onClick: startCrash },
           { label: "Retro Runner.exe", onClick: () => openWindow("game", "Retro Runner.exe", gameContent) },
         ]}
       />
+      {isCrashing && (
+        <div className="fixed inset-0 z-[999] pointer-events-none overflow-hidden">
+           <div 
+             className="absolute inset-0 bg-black" 
+             style={{ opacity: crashLevel / 100 }}
+           />
+        </div>
+      )}
     </div>
   );
 }
