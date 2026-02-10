@@ -15,6 +15,7 @@ import CRTSettings from "@/components/desktop/CRTSettings";
 import DesktopIcon from "@/components/desktop/DesktopIcon";
 import FaqWindow from "@/components/desktop/windows/FaqWindow";
 import TeamsWindow from "@/components/desktop/windows/TeamsWindow";
+import SystemRecovery from "@/components/effects/SystemRecovery";
 const pixelFont = VT323({ subsets: ["latin"], weight: "400" });
 
 function ErrorPopup({ message, onClose }: { message: string; onClose: () => void }) {
@@ -93,6 +94,18 @@ export default function Phone98({ events, about, leaders, teams, organizers, faq
   const [errors, setErrors] = useState<{ id: number; message: string }[]>([]);
   const [popupInterval, setPopupInterval] = useState<number>(12000);
   const [popupChance, setPopupChance] = useState<number>(0.8);
+  const [isCrashing, setIsCrashing] = useState(false);
+  const [showRecovery, setShowRecovery] = useState(false);
+  const [crashLevel, setCrashLevel] = useState(0);
+
+  const startCrash = () => {
+    if (isCrashing) return;
+    setIsCrashing(true);
+    setCrashLevel(100);
+    setTimeout(() => {
+      setShowRecovery(true);
+    }, 800);
+  };
 
   const scheduleContent = (<ScheduleWindow events={events} />);
   const aboutContent = (<AboutWindow about={about} leaders={leaders} organizers={organizers} faqs={faqs} />);
@@ -130,6 +143,7 @@ export default function Phone98({ events, about, leaders, teams, organizers, faq
     { id: "register", title: "Register.exe", pixelName: "register" as const, pixelColor: "#33ffaa" },
     { id: "crt-settings", title: "CRT Settings.exe", pixelName: "settings" as const, pixelColor: "#00ffff" },
     { id: "ann", title: "Announcements.log", pixelName: "ann" as const, pixelColor: "#ff3300" },
+    { id: "crash", title: "Malware.exe", pixelName: "recycle" as const, pixelColor: "#fb0202" },
   ]), []);
 
   const messages = useMemo(() => ([
@@ -225,15 +239,18 @@ export default function Phone98({ events, about, leaders, teams, organizers, faq
   return (
     boot ? (
       <BootScreen onDone={() => setBoot(false)} />
+    ) : showRecovery ? (
+      <SystemRecovery />
     ) : (
     <div
-      className={`${pixelFont.className} fixed inset-0 text-white`}
+      className={`${pixelFont.className} fixed inset-0 text-white transition-all duration-75 ${isCrashing ? "pointer-events-none select-none" : ""}`}
       style={{
         backgroundImage: "url(\"/hacksrm-logo.webp\")",
         backgroundSize: "var(--wallpaper-size, contain)",
         backgroundPosition: "var(--wallpaper-pos, center)",
         backgroundRepeat: "no-repeat",
         backgroundColor: "#0b0b0b",
+        filter: isCrashing ? `brightness(${100 - crashLevel}%)` : undefined,
       }}
     >
       {/* Top bar */}
@@ -269,7 +286,11 @@ export default function Phone98({ events, about, leaders, teams, organizers, faq
                 pixelName={ic.pixelName}
                 pixelColor={ic.pixelColor}
                 clickToOpen
-                onOpen={() => { playClick(); setActiveId(ic.id); }}
+                onOpen={() => { 
+                  playClick(); 
+                  if (ic.id === "crash") startCrash();
+                  else setActiveId(ic.id); 
+                }}
               />
             ))}
           </div>
@@ -321,6 +342,14 @@ export default function Phone98({ events, about, leaders, teams, organizers, faq
       {activeId === null && (
         <div className="fixed left-0 right-0 bottom-12 z-40 flex justify-center pointer-events-none">
           <CountdownTimer target={new Date("2026-02-25T00:00:00")} label="Hackathon starts in:" compact />
+        </div>
+      )}
+      {isCrashing && (
+        <div className="fixed inset-0 z-[999] pointer-events-none overflow-hidden">
+           <div 
+             className="absolute inset-0 bg-black" 
+             style={{ opacity: crashLevel / 100 }}
+           />
         </div>
       )}
     </div>
