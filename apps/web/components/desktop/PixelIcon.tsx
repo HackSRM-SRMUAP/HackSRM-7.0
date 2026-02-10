@@ -13,11 +13,22 @@ type PixelIconName =
   | "faq"
   | "sponsors"
   | "register"
+  | "github"
   | "recycle";
 
 export default function PixelIcon({ name, color = "#000080" }: { name: PixelIconName; color?: string }) {
   const patterns: Record<PixelIconName, string[]> = {
     // 8x8 patterns; 1 = filled, 0 = empty
+    github: [
+      "00111100",
+      "01111110",
+      "11011011",
+      "11111111",
+      "11111111",
+      "11011011",
+      "01111110",
+      "00111100",
+    ],
     game: [
       "00111100",
       "01111110",
