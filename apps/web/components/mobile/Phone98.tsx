@@ -143,6 +143,7 @@ export default function Phone98({ events, about, leaders, teams, organizers, faq
     { id: "register", title: "Register.exe", pixelName: "register" as const, pixelColor: "#33ffaa" },
     { id: "crt-settings", title: "CRT Settings.exe", pixelName: "settings" as const, pixelColor: "#00ffff" },
     { id: "ann", title: "Announcements.log", pixelName: "ann" as const, pixelColor: "#ff3300" },
+    { id: "github", title: "Source Code", pixelName: "github" as const, pixelColor: "#333333" },
     { id: "crash", title: "Malware.exe", pixelName: "recycle" as const, pixelColor: "#fb0202" },
   ]), []);
 
@@ -289,6 +290,7 @@ export default function Phone98({ events, about, leaders, teams, organizers, faq
                 onOpen={() => { 
                   playClick(); 
                   if (ic.id === "crash") startCrash();
+                  else if (ic.id === "github") window.open("https://github.com/HackSRM-SRMUAP/HackSRM-7.0", "_blank");
                   else setActiveId(ic.id); 
                 }}
               />
