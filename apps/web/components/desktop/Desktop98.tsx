@@ -110,7 +110,7 @@ export default function Desktop98({ events, about, leaders, teams, organizers, f
   const anyMaximized = maximizedIds.size > 0;
   // Sidebar sponsor tier filter
   const [sponsorTier, setSponsorTier] = useState<string>("All");
-  const tiers = ["All", "Platinum", "Gold", "Silver", "Community"];
+  const tiers = ["All", "Gold", "Silver", "Community"];
   const tierBadgeClass = (t: string) => (
     t === "Platinum" ? "bg-gray-300 text-gray-800 border-gray-400" :
       t === "Gold" ? "bg-amber-200 text-amber-900 border-amber-300" :
@@ -246,6 +246,7 @@ export default function Desktop98({ events, about, leaders, teams, organizers, f
     { id: "faq", title: "FAQ.txt", pixelName: "faq" as const, pixelColor: "#66ccff", content: faqContent },
     { id: "sponsors", title: "Sponsors.html", pixelName: "sponsors" as const, pixelColor: "#00aaff", content: sponsorsContent },
     { id: "register", title: "Register.exe", pixelName: "register" as const, pixelColor: "#33ffaa", content: registerContent },
+    { id: "github", title: "Source Code", pixelName: "github" as const, pixelColor: "#333333", content: null },
     { id: "crash", title: "Malware.exe", pixelName: "recycle" as const, pixelColor: "#ff0000", content: null },
   ], [aboutContent, scheduleContent, gameContent, prizesContent, rulesContent, announcementsContent, teamsContent, faqContent, sponsorsContent, registerContent]);
 
@@ -327,6 +328,8 @@ export default function Desktop98({ events, about, leaders, teams, organizers, f
             onOpen={() => {
               if (ic.id === "crash") {
                 startCrash();
+              } else if (ic.id === "github") {
+                window.open("https://github.com/HackSRM-SRMUAP/HackSRM-7.0", "_blank");
               } else {
                 openWindow(ic.id, ic.title, ic.content);
               }
@@ -475,6 +478,7 @@ export default function Desktop98({ events, about, leaders, teams, organizers, f
           { label: "FAQ.txt", onClick: () => openWindow("faq", "FAQ.txt", faqContent) },
           { label: "Sponsors.html", onClick: () => openWindow("sponsors", "Sponsors.html", sponsorsContent) },
           { label: "Register.exe", onClick: () => openWindow("register", "Register.exe", registerContent) },
+          { label: "Source Code (GitHub)", onClick: () => window.open("https://github.com/HackSRM-SRMUAP/HackSRM-7.0", "_blank") },
           { label: "Malware.exe", onClick: startCrash },
           { label: "Retro Runner.exe", onClick: () => openWindow("game", "Retro Runner.exe", gameContent) },
         ]}
