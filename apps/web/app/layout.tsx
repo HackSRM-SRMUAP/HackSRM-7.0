@@ -4,6 +4,7 @@ import "./globals.css";
 import CRTOverlay from "@/components/effects/CRTOverlay";
 import RetroBackground from "@/components/effects/RetroBackground";
 import Starfield from "@/components/effects/Starfield";
+import { Analytics } from '@vercel/analytics/next';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -50,6 +51,7 @@ export default function RootLayout({
         <main className="relative z-40">
           {children}
         </main>
+        <Analytics />
       </body>
     </html>
   );
