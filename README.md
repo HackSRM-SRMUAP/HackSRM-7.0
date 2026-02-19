@@ -1,102 +1,118 @@
-# HackSRM 7.0
+# HackSRM 7.0 - Official Website & Content Platform
 
-## About HackSRM 7.0
-HackSRM 7.0 is a student-led hackathon hosted at SRM University, AP, bringing together developers, designers, and innovators to build real-world solutions across multiple tracks. The repo powers the public website (Next.js) and the content backend (Sanity) for schedule, workshops, and announcements.
+![Next.js](https://img.shields.io/badge/Next.js-Black?style=for-the-badge&logo=next.js&logoColor=white)
+![Sanity](https://img.shields.io/badge/Sanity-F03E2F?style=for-the-badge&logo=sanity&logoColor=white)
+![Turborepo](https://img.shields.io/badge/Turborepo-EF4444?style=for-the-badge&logo=turborepo&logoColor=white)
+![License](https://img.shields.io/badge/License-GPLv3-blue?style=for-the-badge)
+
+The official web platform and content management backend for **HackSRM 7.0**, a premier student-led hackathon hosted at SRM University, AP. This repository utilizes a modern monorepo architecture to seamlessly deliver the public-facing retro-themed web application alongside its headless CMS.
 
 ## Table of Contents
-- [Repo Structure](#repo-structure)
-- [Tech Stack](#tech-stack)
-- [Prerequisites](#prerequisites)
-- [Install](#install)
-- [Develop](#develop)
-- [Environment Variables](#environment-variables)
-- [Sanity Content](#sanity-content)
-- [Useful Commands](#useful-commands)
-- [Notes](#notes)
-- [Organizers](#organizers)
-- [Leadership](#leadership)
+- [Architecture & Tech Stack](#architecture--tech-stack)
+- [Repository Structure](#repository-structure)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Environment Variables](#environment-variables)
+- [Development Workflow](#development-workflow)
+- [Content Management (Sanity)](#content-management-sanity)
+- [Core Team](#core-team)
 - [License](#license)
-- [Authors](#authors)
 
-## Repo Structure
-> uses turborepo framework for monorepo management
+## Architecture & Tech Stack
+
+This project is structured as a monorepo using **Turborepo** to manage dependencies and scripts across our frontend and CMS applications efficiently. 
+
+* **Frontend Application:** Next.js (App Router), React, Tailwind-style utility CSS.
+* **Content Backend:** Sanity.io (Headless CMS for schedules, workshops, and dynamic announcements).
+* **Package Management:** pnpm.
+
+## Repository Structure
+
+The workspace is divided into autonomous apps and shared internal packages:
+
+```text
+hacksrm-7/
+├── apps/
+│   ├── web/               # Next.js public-facing application
+│   └── studio/            # Sanity Studio CMS dashboard
+├── packages/
+│   ├── ui/                # Shared React UI components
+│   ├── eslint-config/     # Shared linting rules
+│   └── typescript-config/ # Base tsconfig.json
+└── package.json           # Workspace root
 ```
-apps/
-	web/          # Next.js site
-	studio/       # Sanity Studio
-packages/
-	ui/           # shared UI components
-	eslint-config/ typescript-config/
-```
 
-## Tech Stack
-- Next.js (App Router), React
-- pnpm, Turborepo
-- Sanity.io (content, schedule)
-- Tailwind-like utility classes + custom CSS
+## Getting Started
+> for developers, contributors, and hobbists
+### Prerequisites
+Ensure your local development environment meets the following requirements:
 
-## Prerequisites
-- Node 18+ and pnpm
-- Windows bash (`bash.exe`) or any POSIX shell
+    Node.js (v18.0.0 or higher), pnpm (v8+ recommended)
 
-## Install
+
+### Installation
+Clone the codebase and install the workspace dependencies:
+
 ```bash
+git clone -b main https://github.com/HackSRM-SRMUAP/HackSRM-7.0
 pnpm install
 ```
+### Environment Variables
+The web application requires specific keys to communicate with the Sanity backend. Create a .env.local file in apps/web/:
 
-## Develop
-Run the web app:
 ```bash
-pnpm --filter apps/web dev
-```
-Run the Sanity Studio:
-```bash
-pnpm --filter apps/studio dev
-```
-Or run both via turbo:
-```bash
-pnpm turbo run dev --parallel
-```
-
-## Environment Variables
-Web (`apps/web/lib/sanity.ts`) reads:
-- `NEXT_PUBLIC_SANITY_PROJECT_ID` (defaults to `vrujefqh` from Studio config)
-- `NEXT_PUBLIC_SANITY_DATASET` (defaults to `production`)
-
-Set them in `apps/web/.env.local` if you need overrides:
-```
+# apps/web/.env.local
 NEXT_PUBLIC_SANITY_PROJECT_ID=vrujefqh
 NEXT_PUBLIC_SANITY_DATASET=production
 ```
 
-## Sanity Content
-Studio defines `schedule` documents:
-- Fields: `title`, `type` (major/workshop/fun/break), `startTime`, `endTime`, `location`, `description`
+> Security Note: Never commit .env files to version control. Ensure they remain listed in your .gitignore.
 
-Web uses these events in mobile (`Phone98.tsx`) and desktop (`Desktop98.tsx`) views. Ensure the dataset has published `schedule` docs to render the agenda.
 
-## Useful Commands
-- Lint: `pnpm turbo run lint`
-- Build: `pnpm turbo run build`
-- Format: `pnpm turbo run format` (if configured)
+### Development Workflow
+Turborepo allows us to run tasks across multiple workspaces simultaneously or individually.
 
-## Notes
-- Avoid committing secrets in `.npmrc` or `.env*` files.
-- If installs work without a custom `.npmrc`, you can omit it.
-- For Studio schema changes: edit `apps/studio/schemaTypes/*` and re-run `dev`.
+Run the entire stack (Web + Studio) in parallel:
 
-## Organizer(s)
-**Organized by**: Student Council, SRM University, Andhra Pradesh (SRM AP)
+```Bash
+pnpm turbo run dev --parallel
+```
+Or, Run applications individually:
+```Bash
+# Start only the Next.js website
+pnpm --filter apps/web dev
+```
+```
+# Start only the Sanity CMS Studio
+pnpm --filter apps/studio dev
+```
 
-## Leadership
-- **Head:** Nithish Sriram | [LinkedIn](https://www.linkedin.com/in/nithish-sriram/)
-- **Co-Head:** K Bhargavi | [LinkedIn](https://www.linkedin.com/in/jayabhargavi-k-b06418346?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app)
+### Utility Commands:
+Maintain code quality before committing your changes:
 
-## Author
-- Website Lead: Dave | [Portfolio](https://iamdave.vercel.app/)
+`pnpm turbo run lint` - Lints all workspaces.
+
+`pnpm turbo run format` - Formats code via Prettier.
+
+`pnpm turbo run build` - Tests the production build process locally.
+
+### Content Management (Sanity)
+The project relies on Sanity for dynamic content rendering, specifically for the event agenda.
+
+`Schema Modifications:` To update the content structure, edit the schemas located in apps/studio/schemaTypes/. Re-run the development server to see changes in the Studio UI.
+
+`Core Documents:` The schedule document type drives the agenda views in both mobile (Phone98.tsx) and desktop (Desktop98.tsx) UI components. It requires the following fields to be populated and published: 
+
+    title, type, startTime, endTime, location, and description.
+
+## Core Team
+- J Dave Meshak, `Website Developer` | [Portfolio](https://iamdave.vercel.app/)
+- Nithish Sriram, `Head`
+- K Bhargavi, `Co-Head`
 
 ## License
-This project is licensed under the GNU GPLv3 License. You are free to use, copy, modify, merge, publish, and distribute the software with appropriate attribution and without warranty.
+This repository is licensed under the **GNU GPLv3** License.
+You are free to use, copy, modify, merge, publish, and distribute the software with appropriate attribution and without warranty. 
 
-Please check [License]() file for more details.
-
+See the LICENSE file in the root directory for full details.
